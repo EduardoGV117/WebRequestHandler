@@ -16,8 +16,20 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(self.get_response().encode("utf-8"))
 
     def get_response(self):
+        path = self.url().path.lstrip("/")  
+        query = self.query_data()  
+
+        partes_path = path.split("/")  
+        if len(partes_path) >= 2 and partes_path[0] == "proyecto":
+            proyecto = partes_path[1]  
+        else:
+            proyecto = "desconocido"
+
+        autor = query.get("autor", "anónimo") 
+
+        # Crear el HTML dinámico
         return f"""
-    <h1> Hola Web </h1>
+    <h1>Proyecto: {proyecto} Autor: {autor}</h1>
     <p> URL Parse Result : {self.url()}         </p>
     <p> Path Original: {self.path}         </p>
     <p> Headers: {self.headers}      </p>
