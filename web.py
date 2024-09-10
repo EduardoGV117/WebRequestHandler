@@ -1,69 +1,85 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import parse_qsl, urlparse
-import os
+from urllib.parse import urlparse
+
+# Contenido completo de las páginas HTML almacenadas en memoria
+contenido = {
+    '/': """<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ana Lee </title>
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+    <h1>Ana Lee </h1> 
+    <h2>Desarrolladora Web (Música/Diseño/Empresaria)</h2>
+    <small>Este texto fue generado por Copilot:</small>
+    <h3>
+      ¡Hola! Soy Ana Lee, una desarrolladora web que se especializa en la
+      creación de sitios web y aplicaciones web. Me encanta trabajar con
+      tecnologías web modernas y crear experiencias de usuario atractivas y
+      fáciles de usar. También soy una artista y empresaria apasionada, y me
+      encanta combinar mi creatividad y mi pasión por la tecnología para crear
+      soluciones web únicas y efectivas.
+    </h3>
+    <h2>Proyectos</h2>
+    <h3><a href="/proyecto/1"> Web Estática  - App de recomendación de libros </a></h3>
+    <h3><a href="/proyecto/2"> Web App - MeFalta, qué película o serie me falta ver </a></h3>
+    <h3><a href="/proyecto/3"> Web App - Foto22,  web para gestión de fotos </a></h3>
+    <h2>Experiencia</h2>
+    <h3>Desarrolladora Web Freelance</h3>
+    <h3>Backend: FastAPI, nodejs, Go</h3>
+    <h3>Frontend: JavaScript, htmx, React</h3>
+  </body>
+</html>
+    """,
+    '/proyecto/1': """<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ana Lee</title>
+    <link href="css/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <h1>Ana Lee</h1>
+    <h2>Recomendación de libros</h2>
+    <p>
+      El proyecto consiste en el diseño de un sitio que muestra la información
+      de distintos libros. La información se obtiene de una base de datos que se
+      actualiza cada vez que se agrega un nuevo libro. Lorem ipsum dolor sit
+      amet, consectetur adipiscing elit.
+    </p>
+    <h2>Tecnologías</h2>
+    <ul>
+      <li>HTML5</li>
+      <li>CSS</li>
+      <li>Redis</li>
+    </ul>
+  </body>
+</html>
+    """
+}
 
 class WebRequestHandler(BaseHTTPRequestHandler):
-    def url(self):
-        return urlparse(self.path)
-
-    def query_data(self):
-        return dict(parse_qsl(self.url().query))
-
     def do_GET(self):
-        path = self.url().path
-
-        if path == "/":  # Si es la ruta raíz (home page)
-            self.serve_home_page()
-        elif path.startswith("/proyecto"):  # Si es la ruta de proyectos
-            self.serve_project_page()
-        else:
-            self.serve_404_page()
-
-    def serve_home_page(self):
-        try:
-            with open("home.html", "r", encoding="utf-8") as file:
-                content = file.read()
-            
+        path = urlparse(self.path).path
+        # Verificar si la ruta existe en el diccionario
+        if path in contenido:
             self.send_response(200)
             self.send_header("Content-Type", "text/html")
             self.end_headers()
-            self.wfile.write(content.encode("utf-8"))
-        
-        except FileNotFoundError:
-            self.serve_404_page()
-
-    def serve_project_page(self):
-        query = self.query_data()
-        partes_path = self.url().path.lstrip("/").split("/")
-        
-        if len(partes_path) >= 2 and partes_path[0] == "proyecto":
-            proyecto = partes_path[1]  # Extraer el nombre del proyecto
+            # Enviar el contenido HTML almacenado
+            self.wfile.write(contenido[path].encode("utf-8"))
         else:
-            proyecto = "desconocido"
+            self.send_404()
 
-        autor = query.get("autor", "anónimo")  # Obtener el autor o "anónimo"
-
-        content = f"""
-        <h1>Proyecto: {proyecto} Autor: {autor}</h1>
-        <p>URL Parse Result: {self.url()}</p>
-        <p>Path Original: {self.path}</p>
-        <p>Headers: {self.headers}</p>
-        <p>Query: {self.query_data()}</p>
-        """
-        
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html")
-        self.end_headers()
-        self.wfile.write(content.encode("utf-8"))
-
-    def serve_404_page(self):
-        content = """
-        <h1>Error 404: Página no encontrada</h1>
-        <p>La página solicitada no existe.</p>
-        """
+    def send_404(self):
         self.send_response(404)
         self.send_header("Content-Type", "text/html")
         self.end_headers()
+        content = "<h1>Error 404: Página no encontrada</h1>"
         self.wfile.write(content.encode("utf-8"))
 
 if __name__ == "__main__":
