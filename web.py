@@ -8,20 +8,13 @@ contenido = {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ana Lee </title>
+    <title>Mi Servidor Web </title>
     <link href="css/style.css" rel="stylesheet">
   </head>
   <body>
-    <h1>Ana Lee </h1> 
-    <h2>Desarrolladora Web (Música/Diseño/Empresaria)</h2>
-    <small>Este texto fue generado por Copilot:</small>
+    <h1>Mi proyecto servidor web </h1> 
     <h3>
-      ¡Hola! Soy Ana Lee, una desarrolladora web que se especializa en la
-      creación de sitios web y aplicaciones web. Me encanta trabajar con
-      tecnologías web modernas y crear experiencias de usuario atractivas y
-      fáciles de usar. También soy una artista y empresaria apasionada, y me
-      encanta combinar mi creatividad y mi pasión por la tecnología para crear
-      soluciones web únicas y efectivas.
+      soy un programador y estudiante del instituto tecnologico de tijuana presentando mi proyecto que es un servidor web http
     </h3>
     <h2>Proyectos</h2>
     <h3><a href="/proyecto/1"> Web Estática  - App de recomendación de libros </a></h3>
@@ -84,5 +77,5 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     print("Starting server")
-    server = HTTPServer(("localhost", 8000), WebRequestHandler)
+    server = HTTPServer(("0.0.0.0", 8000), WebRequestHandler)
     server.serve_forever()
